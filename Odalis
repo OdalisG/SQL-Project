@@ -1,0 +1,365 @@
+------------------------------------------------------------------------------Table created 1------------------------------------------------------
+CREATE TABLE dbo.Teachers (
+	Teachers_ID int, 
+	FirstName varchar(50),
+	LastName varchar(50),
+	StartDate datetime,
+	DOB datetime,
+	PRIMARY KEY(Teachers_ID)
+	);
+
+	--inserting values for teachers table--
+	INSERT INTO Teachers VALUES 
+	(1,'Jessica','Langer','02-25-2019','02-02-1973','46000'),
+	(2,'Ryan','Lopez','02-25-2019','02-04-1973','54000'),
+	(3,'Doctor','DooLittle','02-25-2019','01-04-1971','37000'),
+	(4,'Tom','Cruz','02-25-2017','02-04-1920',''),
+	(5,'Chris','Brown','02-23-2017','01-04-1920','28000'),
+	(6,'Arleane','Johnson','02-23-2017','01-04-1920',''),
+	(7,'Oprah','Winfrey','08-23-2019','06-04-1920',''),
+	(8,'Tammy','Woo','08-22-2009','06-04-1920',''),
+	(9,'Ying','Xo','03-13-2010','06-14-1980','35000'),
+	(10,'Tommy','Louis','02-23-2016','09-04-1960','56789');
+	
+	SELECT * FROM Teachers
+
+	--adding a column to the teachers table--
+ALTER TABLE dbo.Teachers ADD  Salary INT;
+ALTER TABLE dbo.Teachers ADD  Years_Of_Service INT;
+ALTER TABLE dbo.Teachers ADD PayRaise varchar(3);
+
+
+--insert values into new column--
+UPDATE Teachers SET Salary ='28000' WHERE Teachers_ID= 8;
+UPDATE Teachers SET Salary ='44565' WHERE Teachers_ID= 6;
+UPDATE Teachers SET Salary ='29887' WHERE Teachers_ID= 5;
+UPDATE Teachers SET Salary ='56898' WHERE Teachers_ID= 7;
+UPDATE Teachers SET Salary ='56500' WHERE Teachers_ID= 4;
+UPDATE Teachers SET DOB = NULL WHERE Teachers_ID= 4;
+UPDATE Teachers SET StartDate = NULL WHERE Teachers_ID = 1;
+UPDATE Teachers SET Years = '1' WHERE Teachers_ID = 1;
+UPDATE Teachers SET Years = '1' WHERE Teachers_ID = 2;
+UPDATE Teachers SET Years = '1' WHERE Teachers_ID = 3;
+UPDATE Teachers SET Years = '2' WHERE Teachers_ID = 6;
+UPDATE Teachers SET Years = '2' WHERE Teachers_ID = 5;
+UPDATE Teachers SET Years = '2' WHERE Teachers_ID = 7;
+UPDATE Teachers SET PayRaise = 'YES' WHERE Teachers_ID = 1;
+UPDATE Teachers SET PayRaise = 'NO' WHERE Teachers_ID = 2;
+UPDATE Teachers SET PayRaise = 'NO' WHERE Teachers_ID = 3;
+UPDATE Teachers SET PayRaise = 'YES' WHERE Teachers_ID = 4;
+UPDATE Teachers SET PayRaise = '' WHERE Teachers_ID = 5;
+UPDATE Teachers SET PayRaise = 'YES' WHERE Teachers_ID = 7;
+
+--rename a column--
+EXEC sp_rename 'Teachers.Years', 'Years_Of_Service', 'Column';
+
+SELECT DATEDIFF(YY, StartDate, getdate()), Teachers.FirstName, Teachers.LastName
+FROM dbo.Teachers
+
+--Write a DML statement that DELETEs a set of rows with a WHERE clause. The values used in the WHERE clause should be a variable--
+BEGIN TRANSACTION
+SAVE TRANSACTION Point1
+
+DELETE FROM dbo.Teachers
+WHERE Teachers.LastName LIKE '%Brown%'
+SAVE TRANSACTION Point1
+
+ROLLBACK TRANSACTION Point1
+
+
+INSERT INTO dbo.Teachers VALUES  
+(4,'Tom','Cruz','02-25-2017','02-04-1920','','3', 'Yes'),
+(5,'Chris','Brown','02-23-2017','01-04-1920','28000','3', 'NO'),
+('','Chris','Brown','02-23-2017','01-04-1920','28000','3', '')
+
+
+SELECT * FROM dbo.Teachers
+ORDER BY Teachers.FirstName
+
+	--Write a select query that uses a where statement--
+	SELECT [LastName]
+	FROM dbo.Teachers
+	WHERE [LastName] LIKE '%L%';
+
+	--Write a select query using AND OR statement--
+	SELECT *
+	FROM Teachers
+	WHERE DOB = 1973-02-04 AND [LastName] LIKE '%L%' or Salary <= 53000;
+
+
+--Write a  SELECT query that filters NULL rows using IS NOT NULL--
+SELECT Teachers.FirstName, Teachers.LastName
+FROM Teachers
+WHERE StartDate IS NOT NULL;
+
+
+--Dropping Column--
+ALTER TABLE Teachers DROP COLUMN Salary;
+
+--Write a DML statement that DELETEs a set of rows with a WHERE clause. The values used in the WHERE clause should be a variable--
+SELECT DISTINCT Teachers.LastName, DOB
+FROM Teachers
+WHERE LastName LIKE '%e%'
+DELETE Teachers WHERE Salary = '26500';
+
+SELECT * FROM Teachers
+
+/*Write a DML statement that DELETEs rows from a table that another table references. 
+This script will have to also DELETE any records that reference these rows.
+Both of the DELETE statements need to be wrapped in a single TRANSACTION.*/
+BEGIN TRANSACTION
+DECLARE @School varchar(35) = 'School'
+
+DELETE FROM dbo.Loan
+WHERE Loan.FirstName = @School
+
+DELETE FROM dbo.Student
+WHERE MAJOR = @School
+
+DELETE FROM dbo.Teachers
+WHERE Salary = @School
+COMMIT;
+
+SELECT Loan.FirstName, MAJOR
+FROM dbo.Loan
+JOIN dbo.Student ON MAJOR = 'lawyer'
+ORDER BY Loan.FirstName DESC;
+
+
+--Write a  SELECT query that utilizes a JOIN--
+SELECT * FROM dbo.Teachers   
+JOIN dbo.Student
+ON Teachers_ID = Teachers.Teachers_ID;
+
+
+--Write a  SELECT query that utilizes a JOIN with 3 or more tables--•	Write a  SELECT query that utilizes a JOIN with 3 or more tables--
+SELECT Teachers.Teachers_ID, Teachers.Years_Of_Service, Student.Student_ID, Loan.LastName
+FROM dbo.Teachers
+JOIN Student
+ON Teachers.Teachers_ID = Student.Student_ID, Loan;
+
+
+--Write a  SELECT query that utilizes a LEFT JOIN--
+SELECT Student.Student_ID, Student.FirstName, Student.LastName, Teachers.Years_Of_Service
+FROM Student
+LEFT JOIN dbo.Teachers 
+ON Student.Student_ID = Teachers_ID
+WHERE Years_Of_Service > 3;
+
+--Write a  SELECT query that utilizes a variable in the WHERE clause--
+BEGIN
+DECLARE @var VARCHAR(30)
+
+SELECT @var = 'Odalis'
+SELECT @var = [FirstName]
+FROM Teachers
+WHERE Teachers_ID = 8
+SELECT @var AS 'Odalis G';
+END
+
+--Write a  SELECT query that utilizes a ORDER BY clause--
+SELECT Loan.FirstName
+FROM Loan
+WHERE Delinquent = 'yes'
+ORDER BY Loan_ID ASC;
+
+--Write a  SELECT query that utilizes a GROUP BY clause along with an aggregate function--
+SELECT COUNT(Student_ID), StartDate
+FROM dbo.Student
+GROUP BY StartDate;
+
+--Write a SELECT query that utilizes a CALCULATED FIELD--
+SELECT Teachers.FirstName, Salary*.5, Years_Of_Service
+FROM Teachers
+
+Select * FROM Teachers
+
+--Write a SELECT Query that utilizes a SUBQUERY--
+SELECT Teachers.FirstName, Teachers.LastName, Salary
+FROM dbo.Teachers
+WHERE Salary = ( 
+	SELECT MAX(Salary)
+	FROM [dbo].[Teachers]);
+
+--Write a SELECT query that utilizes a JOIN, at least 2 OPERATORS (AND, OR, =, IN, BETWEEN, ETC) AND A GROUP BY clause with an aggregate function--
+SELECT Student.Student_ID, Student.FirstName, Student.LastName, Teachers.Years_Of_Service
+FROM Student
+LEFT JOIN dbo.Teachers 
+ON Student.Student_ID = Teachers_ID
+WHERE Dropout IS NULL AND MAJOR = 'Lawyer'
+GROUP BY Student.Student_ID, Student.FirstName, Student.LastName, Teachers.Years_Of_Service
+ORDER BY Student_ID DESC;
+
+--Write a SELECT query that utilizes a JOIN with 3 or more tables, at 2 OPERATORS (AND, OR, =, IN, BETWEEN, ETC), a GROUP BY clause with an aggregate function, and a HAVING clause--
+SELECT Student.Student_ID, Student.FirstName, Student.LastName, Teachers.Years_Of_Service
+FROM Student
+LEFT JOIN dbo.Teachers 
+ON Student.Student_ID = Teachers_ID
+WHERE Dropout IS NULL OR MAJOR = 'Nurse'
+GROUP BY Student.Student_ID, Student.FirstName, Student.LastName, Teachers.Years_Of_Service
+HAVING MAX(Years_Of_Service) > 2
+ORDER BY Student_ID ASC;
+
+--Design a NONCLUSTERED INDEX with ONE KEY COLUMN that improves the performance of one of the above queries--
+CREATE NONCLUSTERED INDEX IX_MAJOR_Student ON dbo.Student
+( [MAJOR]  ASC )
+
+--Design a NONCLUSTERED INDEX with TWO KEY COLUMNS that improves the performance of one of the above queries--
+CREATE NONCLUSTERED INDEX IX_Student_FirstName_StartDate ON dbo.Student
+( [FirstName] ASC, [StartDate] )
+
+  INCLUDE ([DOB], [LastName]
+  )
+
+  --Design a NONCLUSTERED INDEX with AT LEAST ONE KEY COLUMN and AT LEAST ONE INCLUDED COLUMN that improves the performance of one of the above queries--
+CREATE NONCLUSTERED INDEX IX_Delinquent_FirstName_Paid ON dbo.Loan
+( [FirstName] ASC, [Paid] )
+INCLUDE ([StartDate], [DOB])
+
+
+
+select * from student
+---------------------------------------------------------------------------second table below------------------------------------------------------------------
+
+
+--Table 2 created--
+CREATE TABLE dbo.Student (
+	Student_ID int, 
+	FirstName varchar(50),
+	LastName varchar(50),
+	MAJOR varchar(50),
+	StartDate datetime,
+	DOB datetime,
+	PRIMARY KEY(Student_ID)
+	); 
+
+	SELECT * FROM Student
+
+	--select where statement--
+	SELECT [LastName]
+	FROM dbo.Student
+	WHERE [LastName] LIKE 'G%';
+
+	--query using AND OR statement--
+	SELECT * FROM dbo.Student
+	WHERE MAJOR = 'Dentist' AND (FirstName LIKE '%G%' OR FirstName LIKE '%D%');
+
+
+		--inserting values for student table--
+	INSERT INTO Student VALUES
+	(1,'Tammy','James','Psycololgy','02-25-2019','02-02-1973'),
+	(2,'Ryan','Lopez','Business','02-25-2019','02-04-1973'),
+	(3,'Prince','DooLittle','Nurse','08-25-2019','01-04-1971'),
+	(4,'Ronnald','Perez','Dentist','02-25-2017','02-04-1920'),
+	(5,'Donnald','Grump','Lawyer','09-25-2017','02-08-1980'),
+	(6,'Georgia','Gonzales','Dentist','01-25-2019','04-04-1986'),
+	(7,'Tim','Ray','Chemist','09-15-2018','07-04-1950'),
+	(8,'Tom','Ryan','NULL','09-15-2018','07-04-1950'),
+	(9,'Tammy','Ross','','08-15-2018','07-04-1950');
+
+	ALTER TABLE dbo.Student ADD  Dropout varchar(3);
+--Write a DML statement that UPDATEs a set of rows with a WHERE clause. The values used in the WHERE clause should be a variable--
+UPDATE Student SET Dropout ='' WHERE Student_ID= 1;
+UPDATE Student SET Dropout ='NO' WHERE Student_ID= 3;
+UPDATE Student SET Dropout ='NO' WHERE Student_ID= 7;
+UPDATE Student SET Dropout ='YES' WHERE Student_ID= 4;
+
+
+UPDATE dbo.Student
+SET FirstName = 'KIM' 
+WHERE Student_ID = 7;
+
+SELECT * FROM Student
+	----Write a  SELECT query that filters NULL rows using IS NOT NULL---
+	SELECT Student.LastName, Student.MAJOR
+	FROM Student
+	WHERE Dropout IS NOT NULL;
+
+	--Write a DML statement that DELETEs a set of rows with a WHERE clause. The values used in the WHERE clause should be a variable--
+BEGIN TRANSACTION
+SAVE TRANSACTION Point1
+
+DELETE FROM dbo.Student
+WHERE Student.MAJOR LIKE '%Dentist%'
+SAVE TRANSACTION Point1
+
+ROLLBACK TRANSACTION Point1
+
+
+
+------------------------------------- -------------------------------------------------third table below-------------------------------------------------------
+
+	--Table 3 created--
+CREATE TABLE dbo.Loan (
+	Loan_ID int,
+	FirstName varchar(50),
+	LastName varchar(50),
+	Delinquent varchar(3),
+	Paid varchar(3),
+	StartDate datetime,
+	DOB datetime,
+	Foreign KEY (Loan_ID) References dbo.Student
+	);
+	
+	--inserting values for student table--
+	INSERT INTO Loan VALUES
+	(1,'Tammy','James','YES','No','02-25-2019','02-02-1973'),
+	(2,'Ryan','Lopez','YES','No','02-25-2019','02-04-1973'),
+	(3,'Prince','DooLittle','NO','YES','02-25-2019','01-04-1971'),
+	(4,'Ronnald','Perez','NO','YES','02-25-2017','02-04-1920'),
+    (5,'Donnald','Grump','NO','YES','02-25-2017','02-04-1920'),
+	(6,'Georgia','Gonzales','NO','YES','02-25-2017','02-04-1920'),
+	(7,'Tim','Ray','','YES','01-25-2017','02-04-1920'),
+	(8,'Tom','Rayes','NO','YES','07-25-2017','05-08-1980'),
+	(9,'Tony','Roy','NO','YES','09-25-2017','09-10-1990');
+
+	ALTER TABLE dbo.Loan ADD  Second_Loan varchar(20);
+--Write a DML statement that UPDATEs a set of rows with a WHERE clause. The values used in the WHERE clause should be a variable--
+UPDATE Loan SET Second_Loan ='LATE' WHERE Loan_ID= 9;
+UPDATE Loan SET Second_Loan ='LATE' WHERE Loan_ID= 4;
+UPDATE Loan SET Second_Loan ='LATE' WHERE Loan_ID= 1;
+UPDATE Loan SET Second_Loan ='LATE' WHERE Loan_ID= 7;
+	
+	--Write a DML statement that UPDATEs a set of rows with a WHERE clause. The values used in the WHERE clause should be a variable--
+	UPDATE dbo.Loan
+SET FirstName = 'NULL', Delinquent = 'NO' 
+WHERE Loan_ID = 7;
+	
+            --selecting loan table--
+		SELECT * FROM Loan
+
+			--query using AND OR statement--
+	SELECT * FROM Loan
+	WHERE Delinquent = 'NO' AND  (FirstName LIKE '%T%' OR LastName LIKE '%L%');
+
+	--Write a  SELECT query that filters NULL rows using IS NOT NULL--
+	SELECT * FROM dbo.Loan
+	WHERE Delinquent ='' AND [FirstName] IS NOT NULL;
+
+	--one-to-many relationship--
+	SELECT Student_ID, FirstName
+	FROM dbo.Student
+	WHERE FirstName = 'Donnald'
+
+	SELECT FirstName, Loan_ID
+	FROM Loan
+	WHERE Loan_ID = 5;
+
+	--Write a  SELECT query that utilizes a JOIN--
+SELECT MAJOR, Student.Student_ID, Student.FirstName, Loan.Loan_ID
+FROM Student
+INNER JOIN Loan
+ON Student.Student_ID = Loan.Loan_ID 
+WHERE Student.Student_ID = 5;
+
+Select * from Loan
+
+--Write a DML statement that DELETEs a set of rows with a WHERE clause. The values used in the WHERE clause should be a variable--
+BEGIN TRANSACTION
+SAVE TRANSACTION Point1
+
+DELETE FROM dbo.Loan
+WHERE Loan.Delinquent LIKE ''
+SAVE TRANSACTION Point1
+
+ROLLBACK TRANSACTION Point1
